@@ -1,0 +1,169 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+
+Parameters:
+
+Metadata:
+
+Mappings:
+
+Conditions:
+
+Resources:
+  VPC:
+    Type: "AWS::EC2::VPC"
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      Tags:
+        - Key: VPCDemo
+          Value: "VPC Demo"
+
+  InternetGateway:
+    Type: "AWS::EC2::InternetGateway"
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicSubnet:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: "us-east-1a"
+      CidrBlock: !GetAtt VPC.CidrBlock
+      VpcId: !Ref VPC
+      Tags:
+        - Key: PublicSubnet
+          Value: "Public Subnet"
+
+  PrivateSubnet:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: "us-east-1b"
+      CidrBlock: 10.0.1.0/24
+      VpcId: !Ref VPC
+    Tags:
+      - Key: PrivateSubnet
+        Value: "Private Subnet"
+
+  NACL:
+    Type: "AWS::EC2::NetworkAcl"
+    Properties:
+      Tags:
+        - Key: NACL
+          Value: "NACL Demo"
+      VpcId: !Ref VPC
+
+  NACLIngress1:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: !GetAtt VPC.CidrBlock
+      Egress: false
+      NetworkAclId: !Ref NACL
+      Protocol: -1
+      RuleAction: allow
+      RuleNumber: 100
+
+  NACLEgress1:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: !GetAtt VPC.CidrBlock
+      Egress: true
+      NetworkAclId: !Ref NACL
+      Protocol: -1
+      RuleAction: allow
+      RuleNumber: 100
+
+  PublicRouteTable:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      Tags:
+        - Key: PublicRouteTableDemo
+          Value: "Public Route Table Demo"
+      VpcId: !Ref VPC
+
+  PublicRoute1:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: !GetAtt VPC.CidrBlock
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicRoute2:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref PublicRouteTable
+
+  NATInstance:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      AdditionalInfo: String
+      Affinity: String
+      AvailabilityZone: String
+      BlockDeviceMappings:
+        - BlockDeviceMapping
+      CpuOptions: CpuOptions
+      CreditSpecification: CreditSpecification
+      DisableApiTermination: Boolean
+      EbsOptimized: Boolean
+      ElasticGpuSpecifications:
+        - ElasticGpuSpecification
+      ElasticInferenceAccelerators:
+        - ElasticInferenceAccelerator
+      HibernationOptions: HibernationOptions
+      HostId: String
+      HostResourceGroupArn: String
+      IamInstanceProfile: String
+      ImageId: String
+      InstanceInitiatedShutdownBehavior: String
+      InstanceType: String
+      Ipv6AddressCount: Integer
+      Ipv6Addresses:
+        - InstanceIpv6Address
+      KernelId: String
+      KeyName: String
+      LaunchTemplate: LaunchTemplateSpecification
+      LicenseSpecifications:
+        - LicenseSpecification
+      Monitoring: Boolean
+      NetworkInterfaces:
+        - NetworkInterface
+      PlacementGroupName: String
+      PrivateIpAddress: String
+      RamdiskId: String
+      SecurityGroupIds:
+        - String
+      SecurityGroups:
+        - String
+      SourceDestCheck: Boolean
+      SsmAssociations:
+        - SsmAssociation
+      SubnetId: String
+      Tags:
+        - Tag
+      Tenancy: String
+      UserData: String
+      Volumes:
+        - Volume
+
+  PrivateRouteTable:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      Tags:
+        - Key: PrivateRouteTableDemo
+          Value: "Private Route Table Demo"
+      VpcId: !Ref VPC
+
+  PrivateRoute1:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: !GetAtt VPC.CidrBlock
+      RouteTableId: !Ref PrivateRouteTable
+
+Transform:
+
+Outputs:
