@@ -10,7 +10,7 @@ Parameters:
     Default: jt0398
   GithubRepo:
     Type: String
-    Default: Fargate-ECSCluster-Cloudformation
+    Default: AWS-Demo
   GithubBranch:
     Type: String
     Default: master
@@ -19,7 +19,7 @@ Parameters:
     Default: <GITHUB ACCESS TOKEN>
   ContainerPort:
     Type: Number
-    Default: 8080
+    Default: 3001
 
 Resources:
   # Create an ECR Repository to store docker images
@@ -27,13 +27,13 @@ Resources:
     Type: AWS::ECR::Repository
     Properties:
       RepositoryName:
-        !Join ["-", [!Ref Stage, !Ref "AWS::AccountId", "ecr-repository"]]
+        !Join ["-", [!Ref Stage, !Ref "AWS::StackName", "ecr-repository"]]
 
   # Create an S3 Bucket to store build artifacts
   S3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Join ["-", [!Ref Stage, !Ref "AWS::AccountId", "s3bucket"]]
+      BucketName: !Join ["-", [!Ref Stage, !Ref "AWS::StackName", "s3bucket"]]
 
   # Create Access Role for CodePipeLine
   CodePipeLineExecutionRole:
@@ -92,18 +92,18 @@ Resources:
               !Join [
                 ".",
                 [
-                  !Ref "AWS::AccountId",
+                  !Ref "AWS::StackName",
                   "dkr.ecr",
                   !Ref "AWS::Region",
                   !Join ["/", ["amazonaws.com", !Ref "ECRRepository"]],
                 ],
               ]
-      Name: !Join ["-", [!Ref Stage, !Ref "AWS::AccountId", "BuildProject"]]
+      Name: !Join ["-", [!Ref Stage, !Ref "AWS::StackName", "BuildProject"]]
       ServiceRole: !Ref CodeBuildExecutionRole
       Source:
         Type: CODEPIPELINE
         # This file (buildspec.yml In Source code) contains commands to Create and Push a docker image to the ECR_REPOSITORY_URI
-        BuildSpec: buildspec.yml
+        BuildSpec: server/daily-trend-service/buildspec.yml
 
   # Create CodePipeline with 3 stages (Source, Build and Deploy)
   CodePipeLine:
@@ -111,9 +111,9 @@ Resources:
     DependsOn: S3Bucket
     Properties:
       ArtifactStore:
-        Location: !Join ["-", [!Ref Stage, !Ref "AWS::AccountId", "s3bucket"]]
+        Location: !Join ["-", [!Ref Stage, !Ref "AWS::StackName", "s3bucket"]]
         Type: S3
-      Name: !Join ["-", [!Ref Stage, !Ref "AWS::AccountId", "CodePipeLine"]]
+      Name: !Join ["-", [!Ref Stage, !Ref "AWS::StackName", "CodePipeLine"]]
       RestartExecutionOnUpdate: False
       RoleArn:
         Fn::GetAtt: [CodePipeLineExecutionRole, Arn]
@@ -127,7 +127,7 @@ Resources:
                 Category: Source
                 Owner: ThirdParty
                 Provider: GitHub
-                Version: 1
+                Version: "1"
               Configuration:
                 Repo: !Ref GithubRepo
                 Branch: !Ref GithubBranch
@@ -144,7 +144,7 @@ Resources:
               ActionTypeId:
                 Category: Build
                 Owner: AWS
-                Version: 1
+                Version: "1"
                 Provider: CodeBuild
               OutputArtifacts:
                 - Name: build-output-artifacts
@@ -154,14 +154,14 @@ Resources:
                 ProjectName: !Ref BuildProject
               RunOrder: 1
 
-        # Deploy the project by executing Fargate-Cluster.yml file in the Source code with Cloudformation.
+        # Deploy the project by executing ecs-service-daily.yml file in the Source code with Cloudformation.
         - Name: Deploy
           Actions:
             - Name: Deploy
               ActionTypeId:
                 Category: Deploy
                 Owner: AWS
-                Version: 1
+                Version: "1"
                 Provider: CloudFormation
               InputArtifacts:
                 - Name: source-output-artifacts
@@ -169,7 +169,7 @@ Resources:
               Configuration:
                 ActionMode: CREATE_UPDATE
                 Capabilities: CAPABILITY_NAMED_IAM
-                # Pass parameter values to Fargate-Cluster.yml for deployment
+                # Pass parameter values to ecs-service-daily.yml for deployment
                 ParameterOverrides: !Sub |
                   {
                     "ImageURI" : { "Fn::GetParam" : ["build-output-artifacts", "imageDetail.json", "ImageURI"] },
@@ -179,9 +179,6 @@ Resources:
                 RoleArn:
                   Fn::GetAtt: [CloudformationExecutionRole, Arn]
                 StackName:
-                  !Join [
-                    "-",
-                    [!Ref Stage, !Ref "AWS::AccountId", "FargateECSCluster"],
-                  ]
-                TemplatePath: source-output-artifacts::Cloudformation/Fargate-Cluster.yml
+                  !Join ["-", [!Ref Stage, !Ref "AWS::StackName", "ECSService"]]
+                TemplatePath: source-output-artifacts::Cloudformation/ecs-service-daily.yml
               RunOrder: 1
