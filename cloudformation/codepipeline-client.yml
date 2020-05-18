@@ -2,9 +2,6 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: The CloudFormation template for the CodePipeline.
 
 Parameters:
-  Stage:
-    Type: String
-    Default: dev
   GithubUserName:
     Type: String
     Default: jt0398
@@ -26,14 +23,13 @@ Resources:
   ECRRepository:
     Type: AWS::ECR::Repository
     Properties:
-      RepositoryName:
-        !Join ["-", [!Ref Stage, !Ref "AWS::StackName", "ecr-repository"]]
+      RepositoryName: !Join ["-", [!Ref "AWS::StackName", "ecr-repository"]]
 
   # Create an S3 Bucket to store build artifacts
   S3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Join ["-", [!Ref Stage, !Ref "AWS::StackName", "s3bucket"]]
+      BucketName: !Join ["-", [!Ref "AWS::StackName", "s3bucket"]]
 
   # Create Access Role for CodePipeLine
   CodePipeLineExecutionRole:
@@ -92,13 +88,13 @@ Resources:
               !Join [
                 ".",
                 [
-                  !Ref "AWS::StackName",
+                  !Ref "AWS::AccountId",
                   "dkr.ecr",
                   !Ref "AWS::Region",
                   !Join ["/", ["amazonaws.com", !Ref "ECRRepository"]],
                 ],
               ]
-      Name: !Join ["-", [!Ref Stage, !Ref "AWS::StackName", "BuildProject"]]
+      Name: !Join ["-", [!Ref "AWS::StackName", "BuildProject"]]
       ServiceRole: !Ref CodeBuildExecutionRole
       Source:
         Type: CODEPIPELINE
@@ -111,9 +107,9 @@ Resources:
     DependsOn: S3Bucket
     Properties:
       ArtifactStore:
-        Location: !Join ["-", [!Ref Stage, !Ref "AWS::StackName", "s3bucket"]]
+        Location: !Join ["-", [!Ref "AWS::StackName", "s3bucket"]]
         Type: S3
-      Name: !Join ["-", [!Ref Stage, !Ref "AWS::StackName", "CodePipeLine"]]
+      Name: !Join ["-", [!Ref "AWS::StackName", "CodePipeLine"]]
       RestartExecutionOnUpdate: False
       RoleArn:
         Fn::GetAtt: [CodePipeLineExecutionRole, Arn]
@@ -173,12 +169,10 @@ Resources:
                 ParameterOverrides: !Sub |
                   {
                     "ImageURI" : { "Fn::GetParam" : ["build-output-artifacts", "imageDetail.json", "ImageURI"] },
-                    "Stage":  "${Stage}",
                     "ContainerPort": "${ContainerPort}"
                   }
                 RoleArn:
                   Fn::GetAtt: [CloudformationExecutionRole, Arn]
-                StackName:
-                  !Join ["-", [!Ref Stage, !Ref "AWS::StackName", "ECSService"]]
-                TemplatePath: source-output-artifacts::Cloudformation/ecs-service-client.yml
+                StackName: !Join ["-", [!Ref "AWS::StackName", "ECSService"]]
+                TemplatePath: source-output-artifacts::cloudformation/ecs-service-client.yml
               RunOrder: 1
