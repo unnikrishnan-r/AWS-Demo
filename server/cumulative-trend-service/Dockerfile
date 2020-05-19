@@ -4,7 +4,7 @@ RUN mkdir -p /usr/src/app
 
 WORKDIR /usr/src/app
 
-COPY ./server/cumulative-trend-service .
+COPY . .
 
 RUN npm install
 
