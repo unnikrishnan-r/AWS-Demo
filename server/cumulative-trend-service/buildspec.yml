@@ -4,10 +4,6 @@ phases:
   install:
     runtime-versions:
       docker: 18
-      nodejs: 10
-    commands:
-      - cd server/cumulative-trend-service/
-      - npm install
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
@@ -19,7 +15,7 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
-      - docker build . -t $ECR_REPOSITORY_URI:latest
+      - docker build --file server/cumulative-trend-service/Dockerfile -t $ECR_REPOSITORY_URI:latest .
       - docker tag $ECR_REPOSITORY_URI:latest $ECR_REPOSITORY_URI:$IMAGE_TAG
   post_build:
     commands:
