@@ -4,9 +4,9 @@ RUN mkdir -p /usr/src/app
 
 WORKDIR /usr/src/app
 
-RUN npm install
-
 COPY ./server/cumulative-trend-service .
+
+RUN npm install
 
 EXPOSE 3001
 
