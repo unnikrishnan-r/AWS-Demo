@@ -6,6 +6,7 @@ phases:
       docker: 18
       nodejs: 10
     commands:
+      - cd server/cumulative-trend-service/
       - npm install
   pre_build:
     commands:
