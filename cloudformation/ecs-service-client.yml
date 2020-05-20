@@ -108,15 +108,9 @@ Resources:
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      HealthCheckIntervalSeconds: 6
-      HealthCheckPath: /
-      HealthCheckProtocol: HTTP
-      HealthCheckTimeoutSeconds: 5
-      HealthyThresholdCount: 2
       Name: !Ref "ServiceName"
-      Port: 80
-      Protocol: HTTP
-      UnhealthyThresholdCount: 2
+      Port: !Ref HostPort
+      Protocol: TCP
       VpcId:
         Fn::ImportValue: !Join [":", [!Ref "StackName", "VPCId"]]
 

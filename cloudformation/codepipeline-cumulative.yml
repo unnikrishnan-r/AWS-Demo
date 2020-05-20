@@ -2,6 +2,11 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: The CloudFormation template for the CodePipeline.
 
 Parameters:
+  StackName:
+    Type: String
+    Default: dev-vpc
+    Description: The name of the VPC stack that you created. Necessary
+      to locate and reference resources created by that stack.
   GithubUserName:
     Type: String
     Default: jt0398
@@ -169,7 +174,8 @@ Resources:
                 ParameterOverrides: !Sub |
                   {
                     "ImageURI" : { "Fn::GetParam" : ["build-output-artifacts", "imageDetail.json", "ImageURI"] },
-                    "ContainerPort": "${ContainerPort}"
+                    "ContainerPort": "${ContainerPort}",
+                    "StackName": "${StackName}"
                   }
                 RoleArn:
                   Fn::GetAtt: [CloudformationExecutionRole, Arn]
