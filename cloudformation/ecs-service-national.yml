@@ -18,11 +18,11 @@ Parameters:
       will handle the traffic for this service
   ContainerPort:
     Type: Number
-    Default: 80
+    Default: 3003
     Description: What port number the application inside the docker container is binding to
   HostPort:
     Type: Number
-    Default: 3001
+    Default: 3003
     Description: Host Port
   ContainerCpu:
     Type: Number
