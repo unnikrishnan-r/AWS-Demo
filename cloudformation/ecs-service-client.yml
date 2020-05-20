@@ -18,7 +18,7 @@ Parameters:
       will handle the traffic for this service
   ContainerPort:
     Type: Number
-    Default: 80
+    Default: 3000
     Description: What port number the application inside the docker container is binding to
   HostPort:
     Type: Number
@@ -46,7 +46,7 @@ Parameters:
       assigned to different paths on the load balancer.
   DesiredCount:
     Type: Number
-    Default: 1
+    Default: 0
     Description: How many copies of the service task to run
   Role:
     Type: String

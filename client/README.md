@@ -1,3 +1,7 @@
+https://mherman.org/blog/dockerizing-a-react-app/
+
+### `docker container run -it --rm -v \${PWD}:/usr/src/app -v /usr/src/app/node_modules -p 80:3000 -e CHOKIDAR_USEPOLLING=true client:latest`
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
