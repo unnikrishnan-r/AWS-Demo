@@ -100,14 +100,3 @@ Resources:
       Protocol: TCP
       VpcId:
         Fn::ImportValue: !Join [":", [!Ref "StackName", "VPCId"]]
-
-  # Create a rule on the load balancer for routing traffic to the target group
-  PublicLoadBalancerListener:
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    Properties:
-      DefaultActions:
-        - TargetGroupArn: !Ref "TargetGroup"
-          Type: "forward"
-      LoadBalancerArn: !Join [":", [!Ref "StackName", "PublicLoadBalancer"]]
-      Port: !Ref HostPort
-      Protocol: TCP
