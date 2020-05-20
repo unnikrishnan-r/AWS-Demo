@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 
-app.get("/api/daily/", (req, res) => {
+app.get("/", (req, res) => {
   res.send("Hello world from a Daily Trend Service!");
 });
 

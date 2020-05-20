@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 
-app.get("/api/cumulative/", (req, res) => {
+app.get("/", (req, res) => {
   res.send("Hello world from a Cumulative Trend Service!");
 });
 

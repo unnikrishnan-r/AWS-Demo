@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 
-app.get("/api/national/", (req, res) => {
+app.get("/", (req, res) => {
   res.send("Hello world from a National Total Service!");
 });
 
