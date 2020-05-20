@@ -297,15 +297,12 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
       Scheme: internet-facing
-      LoadBalancerAttributes:
-        - Key: idle_timeout.timeout_seconds
-          Value: "30"
       Subnets:
         # The load balancer is placed into the public subnets, so that traffic
         # from the internet can reach the load balancer directly via the internet gateway
         - !Ref PublicSubnetOne
         - !Ref PublicSubnetTwo
-      SecurityGroups: [!Ref "PublicLoadBalancerSG"]
+      Type: "network"
 
   # A dummy target group is used to setup the ALB to just drop traffic
   # initially, before any real service target groups have been added.
