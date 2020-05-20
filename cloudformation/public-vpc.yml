@@ -324,6 +324,60 @@ Resources:
       Port: 80
       Protocol: TCP
 
+  TargetGroupPublic1:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Join ["-", [!Ref "AWS::StackName", "public-1"]]
+      Port: 3001
+      Protocol: TCP
+      VpcId: !Ref "VPC"
+
+  PublicLBListener1:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - TargetGroupArn: !Ref "TargetGroupPublic1"
+          Type: "forward"
+      LoadBalancerArn: !Ref "PublicLoadBalancer"
+      Port: 3001
+      Protocol: TCP
+
+  TargetGroupPublic2:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Join ["-", [!Ref "AWS::StackName", "public-2"]]
+      Port: 3002
+      Protocol: TCP
+      VpcId: !Ref "VPC"
+
+  PublicLBListener2:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - TargetGroupArn: !Ref "TargetGroupPublic2"
+          Type: "forward"
+      LoadBalancerArn: !Ref "PublicLoadBalancer"
+      Port: 3002
+      Protocol: TCP
+
+  TargetGroupPublic3:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Join ["-", [!Ref "AWS::StackName", "public-3"]]
+      Port: 3003
+      Protocol: TCP
+      VpcId: !Ref "VPC"
+
+  PublicLBListener3:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - TargetGroupArn: !Ref "TargetGroupPublic3"
+          Type: "forward"
+      LoadBalancerArn: !Ref "PublicLoadBalancer"
+      Port: 3003
+      Protocol: TCP
+
   # This is an IAM role which authorizes ECS to manage resources on your
   # account on your behalf, such as updating your load balancer with the
   # details of where your containers are, so that traffic can reach your
@@ -387,6 +441,21 @@ Outputs:
     Value: !Ref PublicLoadBalancerListener
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "PublicListener"]]
+  PublicListener1:
+    Description: The ARN of the public load balancer's Listener-1
+    Value: !Ref PublicLBListener1
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "PublicListener1"]]
+  PublicListener2:
+    Description: The ARN of the public load balancer's Listener-2
+    Value: !Ref PublicLBListener2
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "PublicListener2"]]
+  PublicListener3:
+    Description: The ARN of the public load balancer's Listener-3
+    Value: !Ref PublicLBListener3
+    Export:
+      Name: !Join [":", [!Ref "AWS::StackName", "PublicListener3"]]
   VPCId:
     Description: The ID of the VPC that this stack is deployed in
     Value: !Ref "VPC"
