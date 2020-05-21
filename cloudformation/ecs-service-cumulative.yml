@@ -86,7 +86,7 @@ Resources:
             LogDriver: "awslogs"
             Options:
               awslogs-group: !Join [":", ["/ecs/", !Ref "ServiceName"]]
-              awslogs-region: !Ref: "AWS::Region"
+              awslogs-region: !Ref "AWS::Region"
               awslogs-stream-prefix: !Ref "ServiceName"
 
   # The service. The service is a resource which allows you to run multiple
