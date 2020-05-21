@@ -113,5 +113,5 @@ Resources:
         - Field: path-pattern
           Values: [!Ref "Path"]
       ListenerArn:
-        Fn::ImportValue: !Join [":", [!Ref "StackName", "PublicListener"]]
+        Fn::ImportValue: !Join [":", [!Ref "StackName", "PublicListener1"]]
       Priority: !Ref "Priority"
