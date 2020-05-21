@@ -207,8 +207,11 @@ Resources:
       IamInstanceProfile: !Ref "EC2InstanceProfile"
       UserData:
         Fn::Base64: !Sub |
-          #!/bin/bash -xe
-          echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
+          #!/bin/bash -xe         
+          cat <<'EOF' >> /etc/ecs/ecs.config
+          ECS_CLUSTER=${ECSCluster}
+          ECS_AVAILABLE_LOGGING_DRIVERS="awslogs"
+          EOF
           yum install -y aws-cfn-bootstrap
           /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
 
@@ -302,6 +305,8 @@ Resources:
         # from the internet can reach the load balancer directly via the internet gateway
         - !Ref PublicSubnetOne
         - !Ref PublicSubnetTwo
+      SecurityGroups:
+        - !Ref "PublicLoadBalancerSG"
 
   # A dummy target group is used to setup the ALB to just drop traffic
   # initially, before any real service target groups have been added.
@@ -321,60 +326,6 @@ Resources:
           Type: "forward"
       LoadBalancerArn: !Ref "PublicLoadBalancer"
       Port: 80
-      Protocol: HTTP
-
-  TargetGroupPublic1:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      Name: !Join ["-", [!Ref "AWS::StackName", "public-1"]]
-      Port: 3001
-      Protocol: HTTP
-      VpcId: !Ref "VPC"
-
-  PublicLBListener1:
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    Properties:
-      DefaultActions:
-        - TargetGroupArn: !Ref "TargetGroupPublic1"
-          Type: "forward"
-      LoadBalancerArn: !Ref "PublicLoadBalancer"
-      Port: 3001
-      Protocol: HTTP
-
-  TargetGroupPublic2:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      Name: !Join ["-", [!Ref "AWS::StackName", "public-2"]]
-      Port: 3002
-      Protocol: HTTP
-      VpcId: !Ref "VPC"
-
-  PublicLBListener2:
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    Properties:
-      DefaultActions:
-        - TargetGroupArn: !Ref "TargetGroupPublic2"
-          Type: "forward"
-      LoadBalancerArn: !Ref "PublicLoadBalancer"
-      Port: 3002
-      Protocol: HTTP
-
-  TargetGroupPublic3:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      Name: !Join ["-", [!Ref "AWS::StackName", "public-3"]]
-      Port: 3003
-      Protocol: HTTP
-      VpcId: !Ref "VPC"
-
-  PublicLBListener3:
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    Properties:
-      DefaultActions:
-        - TargetGroupArn: !Ref "TargetGroupPublic3"
-          Type: "forward"
-      LoadBalancerArn: !Ref "PublicLoadBalancer"
-      Port: 3003
       Protocol: HTTP
 
   # This is an IAM role which authorizes ECS to manage resources on your
@@ -440,11 +391,6 @@ Outputs:
     Value: !Ref PublicLoadBalancerListener
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "PublicListener"]]
-  PublicListener1:
-    Description: The ARN of the public load balancer's Listener
-    Value: !Ref PublicLBListener1
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "PublicListener1"]]
   VPCId:
     Description: The ID of the VPC that this stack is deployed in
     Value: !Ref "VPC"

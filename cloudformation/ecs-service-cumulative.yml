@@ -22,7 +22,7 @@ Parameters:
     Description: What port number the application inside the docker container is binding to
   HostPort:
     Type: Number
-    Default: 3001
+    Default: 0
     Description: Host Port
   ContainerCpu:
     Type: Number
@@ -34,7 +34,7 @@ Parameters:
     Description: How much memory in megabytes to give the container
   Path:
     Type: String
-    Default: "*"
+    Default: "/api/cumulative"
     Description: A path on the public load balancer that this service
       should be connected to. Use * to send all load balancer
       traffic to this service.
@@ -82,6 +82,12 @@ Resources:
           PortMappings:
             - ContainerPort: !Ref "ContainerPort"
               HostPort: !Ref HostPort
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group: !Join [":", ["/ecs/", !Ref "ServiceName"]]
+              awslogs-region: !Ref: "AWS::Region"
+              awslogs-stream-prefix: !Ref "ServiceName"
 
   # The service. The service is a resource which allows you to run multiple
   # copies of a type of task, and gather up their logs and metrics, as well
@@ -93,6 +99,9 @@ Resources:
       ServiceName: !Ref "ServiceName"
       Cluster:
         Fn::ImportValue: !Join [":", [!Ref "StackName", "ClusterName"]]
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 75
       DesiredCount: !Ref "DesiredCount"
       TaskDefinition: !Ref "TaskDefinition"
       LoadBalancers:
@@ -108,9 +117,15 @@ Resources:
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
+      HealthCheckIntervalSeconds: 6
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
       Name: !Ref "ServiceName"
-      Port: !Ref HostPort
+      Port: 80
       Protocol: HTTP
+      UnhealthyThresholdCount: 2
       VpcId:
         Fn::ImportValue: !Join [":", [!Ref "StackName", "VPCId"]]
 
@@ -125,5 +140,5 @@ Resources:
         - Field: path-pattern
           Values: [!Ref "Path"]
       ListenerArn:
-        Fn::ImportValue: !Join [":", [!Ref "StackName", "PublicListener1"]]
+        Fn::ImportValue: !Join [":", [!Ref "StackName", "PublicListener"]]
       Priority: !Ref "Priority"
