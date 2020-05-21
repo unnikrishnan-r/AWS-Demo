@@ -302,7 +302,6 @@ Resources:
         # from the internet can reach the load balancer directly via the internet gateway
         - !Ref PublicSubnetOne
         - !Ref PublicSubnetTwo
-      Type: "network"
 
   # A dummy target group is used to setup the ALB to just drop traffic
   # initially, before any real service target groups have been added.
@@ -311,7 +310,7 @@ Resources:
     Properties:
       Name: !Join ["-", [!Ref "AWS::StackName", "drop-1"]]
       Port: 3000
-      Protocol: TCP
+      Protocol: HTTP
       VpcId: !Ref "VPC"
 
   PublicLoadBalancerListener:
@@ -322,14 +321,14 @@ Resources:
           Type: "forward"
       LoadBalancerArn: !Ref "PublicLoadBalancer"
       Port: 80
-      Protocol: TCP
+      Protocol: HTTP
 
   TargetGroupPublic1:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       Name: !Join ["-", [!Ref "AWS::StackName", "public-1"]]
       Port: 3001
-      Protocol: TCP
+      Protocol: HTTP
       VpcId: !Ref "VPC"
 
   PublicLBListener1:
@@ -340,14 +339,14 @@ Resources:
           Type: "forward"
       LoadBalancerArn: !Ref "PublicLoadBalancer"
       Port: 3001
-      Protocol: TCP
+      Protocol: HTTP
 
   TargetGroupPublic2:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       Name: !Join ["-", [!Ref "AWS::StackName", "public-2"]]
       Port: 3002
-      Protocol: TCP
+      Protocol: HTTP
       VpcId: !Ref "VPC"
 
   PublicLBListener2:
@@ -358,14 +357,14 @@ Resources:
           Type: "forward"
       LoadBalancerArn: !Ref "PublicLoadBalancer"
       Port: 3002
-      Protocol: TCP
+      Protocol: HTTP
 
   TargetGroupPublic3:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       Name: !Join ["-", [!Ref "AWS::StackName", "public-3"]]
       Port: 3003
-      Protocol: TCP
+      Protocol: HTTP
       VpcId: !Ref "VPC"
 
   PublicLBListener3:
@@ -376,7 +375,7 @@ Resources:
           Type: "forward"
       LoadBalancerArn: !Ref "PublicLoadBalancer"
       Port: 3003
-      Protocol: TCP
+      Protocol: HTTP
 
   # This is an IAM role which authorizes ECS to manage resources on your
   # account on your behalf, such as updating your load balancer with the
@@ -442,20 +441,11 @@ Outputs:
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "PublicListener"]]
   PublicListener1:
-    Description: The ARN of the public load balancer's Listener-1
+    Description: The ARN of the public load balancer's Listener
     Value: !Ref PublicLBListener1
     Export:
       Name: !Join [":", [!Ref "AWS::StackName", "PublicListener1"]]
-  PublicListener2:
-    Description: The ARN of the public load balancer's Listener-2
-    Value: !Ref PublicLBListener2
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "PublicListener2"]]
-  PublicListener3:
-    Description: The ARN of the public load balancer's Listener-3
-    Value: !Ref PublicLBListener3
-    Export:
-      Name: !Join [":", [!Ref "AWS::StackName", "PublicListener3"]]
+
   VPCId:
     Description: The ID of the VPC that this stack is deployed in
     Value: !Ref "VPC"

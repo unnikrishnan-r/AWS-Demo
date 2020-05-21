@@ -71,11 +71,12 @@ Resources:
             - ContainerPort: !Ref "ContainerPort"
               HostPort: !Ref HostPort
 
-    # The service. The service is a resource which allows you to run multiple
+  # The service. The service is a resource which allows you to run multiple
   # copies of a type of task, and gather up their logs and metrics, as well
   # as monitor the number of running tasks and replace any that have crashed
   Service:
     Type: AWS::ECS::Service
+    DependsOn: LoadBalancerRule
     Properties:
       ServiceName: !Ref "ServiceName"
       Cluster:
@@ -97,6 +98,20 @@ Resources:
     Properties:
       Name: !Ref "ServiceName"
       Port: !Ref HostPort
-      Protocol: TCP
+      Protocol: HTTP
       VpcId:
         Fn::ImportValue: !Join [":", [!Ref "StackName", "VPCId"]]
+
+  # Create a rule on the load balancer for routing traffic to the target group
+  LoadBalancerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+        - TargetGroupArn: !Ref "TargetGroup"
+          Type: "forward"
+      Conditions:
+        - Field: path-pattern
+          Values: [!Ref "Path"]
+      ListenerArn:
+        Fn::ImportValue: !Join [":", [!Ref "StackName", "PublicListener"]]
+      Priority: !Ref "Priority"
