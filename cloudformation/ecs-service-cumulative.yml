@@ -22,7 +22,7 @@ Parameters:
     Description: What port number the application inside the docker container is binding to
   HostPort:
     Type: Number
-    Default: 0
+    Default: 3001
     Description: Host Port
   ContainerCpu:
     Type: Number
