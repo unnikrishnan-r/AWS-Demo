@@ -123,10 +123,11 @@ Resources:
       HealthCheckProtocol: HTTP
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 2
       Name: !Ref "ServiceName"
       Port: 80
       Protocol: HTTP
-      UnhealthyThresholdCount: 2
+      TargetType: "ip"
       VpcId:
         Fn::ImportValue: !Join [":", [!Ref "StackName", "VPCId"]]
 
