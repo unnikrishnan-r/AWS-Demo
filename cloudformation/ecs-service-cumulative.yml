@@ -69,7 +69,6 @@ Resources:
       Family: !Ref "ServiceName"
       Cpu: !Ref "ContainerCpu"
       Memory: !Ref "ContainerMemory"
-      NetworkMode: "awsvpc"
       TaskRoleArn:
         Fn::If:
           - "HasCustomRole"
@@ -104,13 +103,6 @@ Resources:
         MaximumPercent: 200
         MinimumHealthyPercent: 75
       DesiredCount: !Ref "DesiredCount"
-      NetworkConfiguration:
-        AwsvpcConfiguration:
-          Subnets:
-            - Fn::ImportValue:
-                !Join [":", [!Ref "StackName", "PublicSubnetOne"]]
-            - Fn::ImportValue:
-                !Join [":", [!Ref "StackName", "PublicSubnetTwo"]]
       TaskDefinition: !Ref "TaskDefinition"
       LoadBalancers:
         - ContainerName: !Ref "ServiceName"
