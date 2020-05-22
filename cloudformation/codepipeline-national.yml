@@ -15,7 +15,7 @@ Parameters:
     Default: AWS-Demo
   GithubBranch:
     Type: String
-    Default: master
+    Default: national
   GithubOAuthToken:
     Type: String
     Default: <GITHUB ACCESS TOKEN>
