@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 
 app.get("/api/cumulative", (req, res) => {
-  res.json({ message: ""Hello world from a Cumulative Trend Service!" });
+  res.json({ message: "Hello world from a Cumulative Trend Service!" });
 });
 
 app.listen(3001, () => {
