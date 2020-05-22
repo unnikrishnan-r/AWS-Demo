@@ -210,7 +210,7 @@ Resources:
           #!/bin/bash -xe         
           cat <<'EOF' >> /etc/ecs/ecs.config
           ECS_CLUSTER=${ECSCluster}
-          ECS_AVAILABLE_LOGGING_DRIVERS="awslogs"
+          ECS_AVAILABLE_LOGGING_DRIVERS=["json-file","awslogs"]
           EOF
           yum install -y aws-cfn-bootstrap
           /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
@@ -314,7 +314,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       Name: !Join ["-", [!Ref "AWS::StackName", "drop-1"]]
-      Port: 3000
+      Port: 80
       Protocol: HTTP
       VpcId: !Ref "VPC"
 

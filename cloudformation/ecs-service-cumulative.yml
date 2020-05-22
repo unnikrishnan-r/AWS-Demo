@@ -69,6 +69,7 @@ Resources:
       Family: !Ref "ServiceName"
       Cpu: !Ref "ContainerCpu"
       Memory: !Ref "ContainerMemory"
+      NetworkMode: "awsvpc"
       TaskRoleArn:
         Fn::If:
           - "HasCustomRole"
