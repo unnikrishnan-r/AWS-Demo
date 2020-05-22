@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 
 app.get("/", (req, res) => {
-  res.send("Hello world from a National Total Service!");
+  res.status(200).send("Hello world from a National Total Service!");
 });
 
 app.listen(3003, () => {

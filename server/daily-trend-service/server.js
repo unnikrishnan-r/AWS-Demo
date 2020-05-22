@@ -1,8 +1,8 @@
 const express = require("express");
 const app = express();
 
-app.get("/", (req, res) => {
-  res.send("Hello world from a Daily Trend Service!");
+app.get("/api/daily", (req, res) => {
+  res.status(200).send("Hello world from a Daily Trend Service!");
 });
 
 app.listen(3002, () => {

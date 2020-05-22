@@ -20,9 +20,6 @@ Parameters:
     Type: Number
     Default: 3001
     Description: What port number the application inside the docker container is binding to
-  HostPort:
-    Type: Number
-    Default: 3001
   ContainerCpu:
     Type: Number
     Default: 256

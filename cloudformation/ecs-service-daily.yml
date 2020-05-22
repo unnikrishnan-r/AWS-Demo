@@ -20,10 +20,6 @@ Parameters:
     Type: Number
     Default: 3002
     Description: What port number the application inside the docker container is binding to
-  HostPort:
-    Type: Number
-    Default: 3002
-    Description: Host Port
   ContainerCpu:
     Type: Number
     Default: 256
@@ -69,7 +65,6 @@ Resources:
       Family: !Ref "ServiceName"
       Cpu: !Ref "ContainerCpu"
       Memory: !Ref "ContainerMemory"
-      NetworkMode: "awsvpc"
       TaskRoleArn:
         Fn::If:
           - "HasCustomRole"
@@ -82,7 +77,6 @@ Resources:
           Image: !Ref "ImageURI"
           PortMappings:
             - ContainerPort: !Ref "ContainerPort"
-              HostPort: !Ref HostPort
           LogConfiguration:
             LogDriver: "awslogs"
             Options:
@@ -104,13 +98,6 @@ Resources:
         MaximumPercent: 200
         MinimumHealthyPercent: 75
       DesiredCount: !Ref "DesiredCount"
-      NetworkConfiguration:
-        AwsvpcConfiguration:
-          Subnets:
-            - Fn::ImportValue:
-                !Join [":", [!Ref "StackName", "PublicSubnetOne"]]
-            - Fn::ImportValue:
-                !Join [":", [!Ref "StackName", "PublicSubnetTwo"]]
       TaskDefinition: !Ref "TaskDefinition"
       LoadBalancers:
         - ContainerName: !Ref "ServiceName"
@@ -134,7 +121,6 @@ Resources:
       Name: !Ref "ServiceName"
       Port: 80
       Protocol: HTTP
-      TargetType: "ip"
       VpcId:
         Fn::ImportValue: !Join [":", [!Ref "StackName", "VPCId"]]
 
