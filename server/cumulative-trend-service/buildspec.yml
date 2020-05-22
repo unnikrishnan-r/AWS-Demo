@@ -16,8 +16,9 @@ phases:
       - echo Build started on `date`
       - echo Docker info
       - docker info
+      - cd server/cumulative-trend-service/
       - echo Building the Docker image...
-      - docker build --file server/cumulative-trend-service/Dockerfile -t $ECR_REPOSITORY_URI:latest .
+      - docker build . -t $ECR_REPOSITORY_URI:latest .
       - docker tag $ECR_REPOSITORY_URI:latest $ECR_REPOSITORY_URI:$IMAGE_TAG
   post_build:
     commands:
