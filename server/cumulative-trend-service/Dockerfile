@@ -1,5 +1,7 @@
 FROM node:latest
 
+ENV NODE_ENV=development NODE_PATH=/usr/src/app
+
 RUN mkdir -p /usr/src/app
 
 WORKDIR /usr/src/app
