@@ -126,7 +126,6 @@ Resources:
       Name: !Ref "ServiceName"
       Port: 80
       Protocol: HTTP
-      TargetType: "ip"
       VpcId:
         Fn::ImportValue: !Join [":", [!Ref "StackName", "VPCId"]]
 
