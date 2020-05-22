@@ -104,6 +104,17 @@ Resources:
         MaximumPercent: 200
         MinimumHealthyPercent: 75
       DesiredCount: !Ref "DesiredCount"
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+            - Fn::ImportValue:
+                !Join [":", [!Ref "StackName", "FargateContainerSecurityGroup"]]
+          Subnets:
+            - Fn::ImportValue:
+                !Join [":", [!Ref "StackName", "PublicSubnetOne"]]
+            - Fn::ImportValue:
+                !Join [":", [!Ref "StackName", "PublicSubnetTwo"]]
       TaskDefinition: !Ref "TaskDefinition"
       LoadBalancers:
         - ContainerName: !Ref "ServiceName"
