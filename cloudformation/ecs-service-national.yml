@@ -34,13 +34,13 @@ Parameters:
     Description: How much memory in megabytes to give the container
   Path:
     Type: String
-    Default: "*"
+    Default: "/api/national"
     Description: A path on the public load balancer that this service
       should be connected to. Use * to send all load balancer
       traffic to this service.
   Priority:
     Type: Number
-    Default: 1
+    Default: 3
     Description: The priority for the routing rule added to the load balancer.
       This only applies if your have multiple services which have been
       assigned to different paths on the load balancer.
@@ -69,6 +69,7 @@ Resources:
       Family: !Ref "ServiceName"
       Cpu: !Ref "ContainerCpu"
       Memory: !Ref "ContainerMemory"
+      NetworkMode: "awsvpc"
       TaskRoleArn:
         Fn::If:
           - "HasCustomRole"
@@ -82,6 +83,12 @@ Resources:
           PortMappings:
             - ContainerPort: !Ref "ContainerPort"
               HostPort: !Ref HostPort
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group: !Join ["/", ["/ecs", !Ref "ServiceName"]]
+              awslogs-region: !Ref "AWS::Region"
+              awslogs-stream-prefix: "ecs"
 
   # The service. The service is a resource which allows you to run multiple
   # copies of a type of task, and gather up their logs and metrics, as well
@@ -93,7 +100,17 @@ Resources:
       ServiceName: !Ref "ServiceName"
       Cluster:
         Fn::ImportValue: !Join [":", [!Ref "StackName", "ClusterName"]]
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 75
       DesiredCount: !Ref "DesiredCount"
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          Subnets:
+            - Fn::ImportValue:
+                !Join [":", [!Ref "StackName", "PublicSubnetOne"]]
+            - Fn::ImportValue:
+                !Join [":", [!Ref "StackName", "PublicSubnetTwo"]]
       TaskDefinition: !Ref "TaskDefinition"
       LoadBalancers:
         - ContainerName: !Ref "ServiceName"
@@ -108,9 +125,16 @@ Resources:
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
+      HealthCheckIntervalSeconds: 6
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 2
       Name: !Ref "ServiceName"
-      Port: !Ref HostPort
-      Protocol: TCP
+      Port: 80
+      Protocol: HTTP
+      TargetType: "ip"
       VpcId:
         Fn::ImportValue: !Join [":", [!Ref "StackName", "VPCId"]]
 
