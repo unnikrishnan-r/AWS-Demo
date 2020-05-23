@@ -5,6 +5,6 @@ app.get("/api/daily", (req, res) => {
   res.status(200).send("Hello world from a Daily Trend Service!");
 });
 
-app.listen(3002, () => {
-  console.log("Server is up on 3002");
+app.listen(80, () => {
+  console.log("Server is up on 80");
 });
