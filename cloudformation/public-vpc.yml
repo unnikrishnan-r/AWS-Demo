@@ -329,7 +329,8 @@ Resources:
             Principal:
               Service: delivery.logs.amazonaws.com
             Condition:
-              Fn::Equals: ["s3:x-amz-acl", "bucket-owner-full-control"]
+              StringEquals:
+                "s3:x-amz-acl": "bucket-owner-full-control"
           - Action:
               - "s3:GetBucketAcl"
             Effect: "Allow"
@@ -371,7 +372,7 @@ Resources:
         - Key: access_logs.s3.bucket
           Value: !Join ["-", [!Ref "AWS::StackName", "loadbalancerlog"]]
         - Key: access_logs.s3.prefix
-          Value: !Ref "AWS::StackName"
+          Value: "lb"
 
   # A dummy target group is used to setup the ALB to just drop traffic
   # initially, before any real service target groups have been added.
