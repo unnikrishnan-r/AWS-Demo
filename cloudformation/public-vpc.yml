@@ -312,7 +312,7 @@ Resources:
               AWS:
                 Fn::Join:
                   - ""
-                  - - "arn:aws:s3:::"
+                  - - "arn:aws:iam::"
                     - !Ref "AWS::AccountId"
                     - ":root"
           - Action:
@@ -323,7 +323,7 @@ Resources:
                 - ""
                 - - "arn:aws:s3:::"
                   - Ref: "S3Bucket"
-                  - "/prefix/AWSLogs/"
+                  - "/lb/AWSLogs/"
                   - !Ref "AWS::AccountId"
                   - "/*"
             Principal:
@@ -338,9 +338,6 @@ Resources:
                 - ""
                 - - "arn:aws:s3:::"
                   - Ref: "S3Bucket"
-                  - "/prefix/AWSLogs/"
-                  - !Ref "AWS::AccountId"
-                  - "/*"
             Principal:
               Service: delivery.logs.amazonaws.com
 
