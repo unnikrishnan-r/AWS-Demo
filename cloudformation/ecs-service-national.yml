@@ -65,7 +65,7 @@ Resources:
     Properties:
       RequiresCompatibilities:
         - "EC2"
-      Family: !Ref "ServiceName"
+      Family: !Join ["-", [!Ref "ServiceName", "task"]]
       Cpu: !Ref "ContainerCpu"
       Memory: !Ref "ContainerMemory"
       NetworkMode: "awsvpc"
@@ -75,7 +75,7 @@ Resources:
           - !Ref "Role"
           - !Ref "AWS::NoValue"
       ContainerDefinitions:
-        - Name: !Join ["-", [!Ref "ServiceName", "task"]]
+        - Name: !Join ["-", [!Ref "ServiceName", "container"]]
           Cpu: !Ref "ContainerCpu"
           Memory: !Ref "ContainerMemory"
           Image: !Ref "ImageURI"
