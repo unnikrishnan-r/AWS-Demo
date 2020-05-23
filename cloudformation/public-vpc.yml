@@ -318,7 +318,7 @@ Resources:
         - Key: access_logs.s3.enabled
           Value: "true"
         - Key: access_logs.s3.bucket
-          Value: !Join ["-", [!Ref "AWS::StackName", "LoadBalancerLog"]]
+          Value: !Join ["-", [!Ref "AWS::StackName", "loadbalancerlog"]]
         - Key: access_logs.s3.prefix
           Value: !Ref "AWS::StackName"
 
