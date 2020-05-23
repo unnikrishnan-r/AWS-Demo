@@ -290,6 +290,60 @@ Resources:
     Properties:
       BucketName: !Join ["-", [!Ref "AWS::StackName", "loadbalancerlog"]]
 
+  S3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Ref: "S3Bucket"
+      PolicyDocument:
+        Statement:
+          - Action:
+              - "s3:PutObject"
+            Effect: "Allow"
+            Resource:
+              Fn::Join:
+                - ""
+                - - "arn:aws:s3:::"
+                  - Ref: "S3Bucket"
+                  - "/lb/AWSLogs/"
+                  - !Ref "AWS::AccountId"
+                  - "/*"
+            Principal:
+              AWS:
+                Fn::Join:
+                  - ""
+                  - - "arn:aws:s3:::"
+                    - !Ref "AWS::AccountId"
+                    - ":root"
+          - Action:
+              - "s3:PutObject"
+            Effect: "Allow"
+            Resource:
+              Fn::Join:
+                - ""
+                - - "arn:aws:s3:::"
+                  - Ref: "S3Bucket"
+                  - "/prefix/AWSLogs/"
+                  - !Ref "AWS::AccountId"
+                  - "/*"
+            Principal:
+              Service: delivery.logs.amazonaws.com
+            Condition:
+              Fn::Equals: ["s3:x-amz-acl", "bucket-owner-full-control"]
+          - Action:
+              - "s3:GetBucketAcl"
+            Effect: "Allow"
+            Resource:
+              Fn::Join:
+                - ""
+                - - "arn:aws:s3:::"
+                  - Ref: "S3Bucket"
+                  - "/prefix/AWSLogs/"
+                  - !Ref "AWS::AccountId"
+                  - "/*"
+            Principal:
+              Service: delivery.logs.amazonaws.com
+
   # A public facing load balancer, this is used for accepting traffic from the public
   # internet and directing it to public facing microservices
   PublicLoadBalancerSG:
