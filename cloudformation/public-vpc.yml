@@ -288,7 +288,7 @@ Resources:
   S3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Join ["-", [!Ref "AWS::StackName", "LoadBalancerLog"]]
+      BucketName: !Join ["-", [!Ref "AWS::StackName", "loadbalancerlog"]]
 
   # A public facing load balancer, this is used for accepting traffic from the public
   # internet and directing it to public facing microservices
