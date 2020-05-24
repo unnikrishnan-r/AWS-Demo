@@ -305,9 +305,7 @@ Resources:
                 - ""
                 - - "arn:aws:s3:::"
                   - Ref: "S3Bucket"
-                  - "/lb/AWSLogs/"
-                  - !Ref "AWS::AccountId"
-                  - "/*"
+                  - "/lb/AWSLogs/127311923021/*"
             Principal:
               AWS:
                 Fn::Join:
