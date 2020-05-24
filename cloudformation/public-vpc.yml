@@ -305,14 +305,14 @@ Resources:
                 - ""
                 - - "arn:aws:s3:::"
                   - Ref: "S3Bucket"
-                  - "/lb/AWSLogs/127311923021/*"
+                  - "/lb/AWSLogs/"
+                  - !Ref "AWS::AccountId"
+                  - "/*"
             Principal:
               AWS:
                 Fn::Join:
                   - ""
-                  - - "arn:aws:iam::"
-                    - !Ref "AWS::AccountId"
-                    - ":root"
+                  - - "arn:aws:iam::127311923021:root"
           - Action:
               - "s3:PutObject"
             Effect: "Allow"
