@@ -29,21 +29,81 @@ Resources:
     Type: AWS::ECR::Repository
     Properties:
       RepositoryName: !Join ["-", [!Ref "AWS::StackName", "client-ecr"]]
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+            {
+              "rulePriority": 1,
+              "description": "Only keep 3 images",
+              "selection": {
+                "tagStatus": "any",
+                "countType": "imageCountMoreThan",
+                "countNumber": 3
+              },
+              "action": { "type": "expire" }
+            }]
+          }
 
   ECRRepositoryCumulative:
     Type: AWS::ECR::Repository
     Properties:
       RepositoryName: !Join ["-", [!Ref "AWS::StackName", "cumulative-ecr"]]
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+            {
+              "rulePriority": 1,
+              "description": "Only keep 3 images",
+              "selection": {
+                "tagStatus": "any",
+                "countType": "imageCountMoreThan",
+                "countNumber": 3
+              },
+              "action": { "type": "expire" }
+            }]
+          }
 
   ECRRepositoryDaily:
     Type: AWS::ECR::Repository
     Properties:
       RepositoryName: !Join ["-", [!Ref "AWS::StackName", "daily-ecr"]]
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+            {
+              "rulePriority": 1,
+              "description": "Only keep 3 images",
+              "selection": {
+                "tagStatus": "any",
+                "countType": "imageCountMoreThan",
+                "countNumber": 3
+              },
+              "action": { "type": "expire" }
+            }]
+          }
 
   ECRRepositoryNational:
     Type: AWS::ECR::Repository
     Properties:
       RepositoryName: !Join ["-", [!Ref "AWS::StackName", "national-ecr"]]
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+            {
+              "rulePriority": 1,
+              "description": "Only keep 3 images",
+              "selection": {
+                "tagStatus": "any",
+                "countType": "imageCountMoreThan",
+                "countNumber": 3
+              },
+              "action": { "type": "expire" }
+            }]
+          }
 
   # Create an S3 Bucket to store build artifacts
   S3Bucket:
@@ -373,7 +433,7 @@ Resources:
                 # Pass parameter values to ecs-service-daily.yml for deployment
                 ParameterOverrides: !Sub |
                   {
-                    "ImageURI" : { "Fn::GetParam" : ["build-output-artifacts-daily", "imageDetail-Detail.json", "ImageURI"] },
+                    "ImageURI" : { "Fn::GetParam" : ["build-output-artifacts-daily", "imageDetail-Daily.json", "ImageURI"] },
                     "ContainerPort": "${ContainerPort}",
                     "StackName": "${StackName}"
                   }

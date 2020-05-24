@@ -118,11 +118,11 @@ Resources:
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      HealthCheckIntervalSeconds: 6
+      HealthCheckIntervalSeconds: 30
       HealthCheckPath: !Ref "Path"
       HealthCheckProtocol: HTTP
       HealthCheckTimeoutSeconds: 5
-      HealthyThresholdCount: 2
+      HealthyThresholdCount: 5
       UnhealthyThresholdCount: 2
       Name: !Ref "ServiceName"
       Port: 80
