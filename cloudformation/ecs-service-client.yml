@@ -42,7 +42,7 @@ Parameters:
       assigned to different paths on the load balancer.
   DesiredCount:
     Type: Number
-    Default: 0
+    Default: 1
     Description: How many copies of the service task to run
   Role:
     Type: String
@@ -55,6 +55,12 @@ Conditions:
   HasCustomRole: !Not [!Equals [!Ref "Role", ""]]
 
 Resources:
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join ["/", ["/aws/ecs", !Ref "ServiceName"]]
+      RetentionInDays: 7
+
   # The task definition. This is a simple metadata description of what
   # container to run, and what resource requirements it has.
   TaskDefinition:
@@ -80,7 +86,7 @@ Resources:
           LogConfiguration:
             LogDriver: "awslogs"
             Options:
-              awslogs-group: !Join ["/", ["/ecs", !Ref "ServiceName"]]
+              awslogs-group: !Ref LogGroup
               awslogs-region: !Ref "AWS::Region"
               awslogs-stream-prefix: "ecs"
 
