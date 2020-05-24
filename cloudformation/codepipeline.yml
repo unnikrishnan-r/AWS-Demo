@@ -19,9 +19,6 @@ Parameters:
   GithubOAuthToken:
     Type: String
     Default: <GITHUB ACCESS TOKEN>
-  ContainerPort:
-    Type: Number
-    Default: 80
 
 Resources:
   # Create an ECR Repository to store docker images
@@ -381,7 +378,6 @@ Resources:
                 ParameterOverrides: !Sub |
                   {
                     "ImageURI" : { "Fn::GetParam" : ["build-output-artifacts-client", "imageDetail-Client.json", "ImageURI"] },
-                    "ContainerPort": "${ContainerPort}",
                     "StackName": "${StackName}"
                   }
                 RoleArn:
@@ -405,8 +401,7 @@ Resources:
                 # Pass parameter values to ecs-service-cumulative.yml for deployment
                 ParameterOverrides: !Sub |
                   {
-                    "ImageURI" : { "Fn::GetParam" : ["build-output-artifacts-cumulative", "imageDetail-Cumulative.json", "ImageURI"] },
-                    "ContainerPort": "${ContainerPort}",
+                    "ImageURI" : { "Fn::GetParam" : ["build-output-artifacts-cumulative", "imageDetail-Cumulative.json", "ImageURI"],
                     "StackName": "${StackName}"
                   }
                 RoleArn:
@@ -434,7 +429,6 @@ Resources:
                 ParameterOverrides: !Sub |
                   {
                     "ImageURI" : { "Fn::GetParam" : ["build-output-artifacts-daily", "imageDetail-Daily.json", "ImageURI"] },
-                    "ContainerPort": "${ContainerPort}",
                     "StackName": "${StackName}"
                   }
                 RoleArn:
@@ -459,7 +453,6 @@ Resources:
                 ParameterOverrides: !Sub |
                   {
                     "ImageURI" : { "Fn::GetParam" : ["build-output-artifacts-national", "imageDetail-National.json", "ImageURI"] },
-                    "ContainerPort": "${ContainerPort}",
                     "StackName": "${StackName}"
                   }
                 RoleArn:
