@@ -16,13 +16,9 @@ Parameters:
     Description:
       The url of a docker image that contains the application process that
       will handle the traffic for this service
-  HostPort:
-    Type: Number
-    Default: 80
-    Description: Host Port
   ContainerPort:
     Type: Number
-    Default: 80
+    Default: 3000
     Description: What port number the application inside the docker container is binding to
   ContainerCpu:
     Type: Number
@@ -66,23 +62,21 @@ Resources:
     Properties:
       RequiresCompatibilities:
         - "EC2"
-      Family: !Join ["-", [!Ref "ServiceName", "task"]]
+      Family: !Ref "ServiceName"
       Cpu: !Ref "ContainerCpu"
       Memory: !Ref "ContainerMemory"
-      NetworkMode: "awsvpc"
       TaskRoleArn:
         Fn::If:
           - "HasCustomRole"
           - !Ref "Role"
           - !Ref "AWS::NoValue"
       ContainerDefinitions:
-        - Name: !Join ["-", [!Ref "ServiceName", "container"]]
+        - Name: !Ref "ServiceName"
           Cpu: !Ref "ContainerCpu"
           Memory: !Ref "ContainerMemory"
           Image: !Ref "ImageURI"
           PortMappings:
             - ContainerPort: !Ref "ContainerPort"
-              HostPort: !Ref HostPort
           LogConfiguration:
             LogDriver: "awslogs"
             Options:
@@ -90,33 +84,27 @@ Resources:
               awslogs-region: !Ref "AWS::Region"
               awslogs-stream-prefix: "ecs"
 
-    # The service. The service is a resource which allows you to run multiple
+  # The service. The service is a resource which allows you to run multiple
   # copies of a type of task, and gather up their logs and metrics, as well
   # as monitor the number of running tasks and replace any that have crashed
   Service:
     Type: AWS::ECS::Service
     DependsOn: LoadBalancerRule
     Properties:
-      ServiceName: !Join ["-", [!Ref "ServiceName", "service"]]
+      ServiceName: !Ref "ServiceName"
       Cluster:
         Fn::ImportValue: !Join [":", [!Ref "StackName", "ClusterName"]]
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 75
       DesiredCount: !Ref "DesiredCount"
-      NetworkConfiguration:
-        AwsvpcConfiguration:
-          Subnets:
-            - Fn::ImportValue:
-                !Join [":", [!Ref "StackName", "PublicSubnetOne"]]
-            - Fn::ImportValue:
-                !Join [":", [!Ref "StackName", "PublicSubnetTwo"]]
       TaskDefinition: !Ref "TaskDefinition"
       LoadBalancers:
         - ContainerName: !Ref "ServiceName"
           ContainerPort: !Ref "ContainerPort"
           TargetGroupArn: !Ref "TargetGroup"
 
+  # A target group. This is used for keeping track of all the tasks, and
   # what IP addresses / port numbers they have. You can query it yourself,
   # to use the addresses yourself, but most often this target group is just
   # connected to an application load balancer, or network load balancer, so
@@ -125,15 +113,14 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       HealthCheckIntervalSeconds: 6
-      HealthCheckPath: !Ref "Path"
+      HealthCheckPath: /
       HealthCheckProtocol: HTTP
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 2
       UnhealthyThresholdCount: 2
-      Name: !Join ["-", [!Ref "ServiceName", "targetgroup"]]
+      Name: !Ref "ServiceName"
       Port: 80
       Protocol: HTTP
-      TargetType: "ip"
       VpcId:
         Fn::ImportValue: !Join [":", [!Ref "StackName", "VPCId"]]
 
