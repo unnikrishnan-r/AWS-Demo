@@ -383,7 +383,7 @@ Resources:
                 RoleArn:
                   Fn::GetAtt: [CloudformationExecutionRole, Arn]
                 StackName:
-                  !Join ["-", [!Ref "AWS::StackName", "-client-ecs-service"]]
+                  !Join ["-", [!Ref "AWS::StackName", "client-ecs-service"]]
                 TemplatePath: source-output-artifacts::cloudformation/ecs-service-client.yml
               RunOrder: 1
             - Name: DeployCumulative
@@ -401,16 +401,13 @@ Resources:
                 # Pass parameter values to ecs-service-cumulative.yml for deployment
                 ParameterOverrides: !Sub |
                   {
-                    "ImageURI" : { "Fn::GetParam" : ["build-output-artifacts-cumulative", "imageDetail-Cumulative.json", "ImageURI"],
+                    "ImageURI" : { "Fn::GetParam" : ["build-output-artifacts-cumulative", "imageDetail-Cumulative.json", "ImageURI"] },
                     "StackName": "${StackName}"
                   }
                 RoleArn:
                   Fn::GetAtt: [CloudformationExecutionRole, Arn]
                 StackName:
-                  !Join [
-                    "-",
-                    [!Ref "AWS::StackName", "-cumulative-ecs-service"],
-                  ]
+                  !Join ["-", [!Ref "AWS::StackName", "cumulative-ecs-service"]]
                 TemplatePath: source-output-artifacts::cloudformation/ecs-service-cumulative.yml
               RunOrder: 1
             - Name: DeployDaily
@@ -434,7 +431,7 @@ Resources:
                 RoleArn:
                   Fn::GetAtt: [CloudformationExecutionRole, Arn]
                 StackName:
-                  !Join ["-", [!Ref "AWS::StackName", "-daily-ecs-service"]]
+                  !Join ["-", [!Ref "AWS::StackName", "daily-ecs-service"]]
                 TemplatePath: source-output-artifacts::cloudformation/ecs-service-daily.yml
               RunOrder: 1
             - Name: DeployNational
@@ -458,6 +455,6 @@ Resources:
                 RoleArn:
                   Fn::GetAtt: [CloudformationExecutionRole, Arn]
                 StackName:
-                  !Join ["-", [!Ref "AWS::StackName", "-national-ecs-service"]]
+                  !Join ["-", [!Ref "AWS::StackName", "national-ecs-service"]]
                 TemplatePath: source-output-artifacts::cloudformation/ecs-service-national.yml
               RunOrder: 1
